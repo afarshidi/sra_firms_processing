@@ -13,3 +13,9 @@ after the first part is done, I migth try to see what sort of capalitis can be a
 first to use their API 
 see what srot of cleaning are required for the columns that I'm itnersted in the most
 try some simple viusaliztion 
+
+#3
+
+so scrping works fine, there are two date columns that can be usful. one is the date that copmany started and one is useful for the ones that they are not active anymore.
+
+putting the date columns aside, there are two main columns I'm intersted in them, one is hte WorkArea, the other is offices. boht needs to get celanined. offices shuold be cleaned to be useflu. I can extract city as well as their postcode, and use them to visualiztion using maps. 
