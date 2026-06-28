@@ -24,3 +24,12 @@ putting the date columns aside, there are two main columns I'm intersted in them
 when tried explodign offices colum. I figured otu that some rows have truacted text when I saved them as excel file, switchign it to a parquet file.
 trying to do some analysis using locations and workareas, clealy if I just count the number of firms based on locaoin, London would have the hgithest number in any work ares, [it's worth it to see is there any area that Lodon is not dominate? ]
 some cleaning and normalization are needed for locatoins, some of them are not cities, some time London might be extracted differenlyt
+[add that calucalitn here too]
+I need to remove the non UK locations, 
+present the percetnage of thos locaitons, so in specific are, what percetnagae in london, etc. not only the number
+
+also in By Concentration / Market Share (Fair for Smaller Cities) , show numbers as well, to say out of A firms, B firms have certain work areas.
+add other control over city, can we adde county? region?
+
+
+
