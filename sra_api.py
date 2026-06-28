@@ -1,77 +1,54 @@
-import requests
-import pandas as pd
-
 import os
+import pandas as pd
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# 1. SET YOUR API SUBSCRIPTION KEY
+# 1. API Setup
 subscription_key = os.getenv("MY_SECRET_API_KEY")
-
-# 2. API ENDPOINT URL
 api_url = "https://sra-prod-apim.azure-api.net/datashare/api/V1/organisation/GetAll"
+headers = {"Ocp-Apim-Subscription-Key": subscription_key, "Cache-Control": "no-cache"}
 
-# 3. HEADERS
-headers = {
-    "Ocp-Apim-Subscription-Key": subscription_key,
-    "Cache-Control": "no-cache"
-}
-
-print(f"Attempting to fetch data from: {api_url}")
+print(f"Fetching data from: {api_url}")
 
 try:
-    # 4. MAKE THE API REQUEST
     response = requests.get(api_url, headers=headers)
 
-    # Check if the request was successful (status code 200)
     if response.status_code == 200:
-        print("Data fetched successfully.")
-        
-        # Convert the JSON response to a Python dictionary
         data = response.json()
-        
+
+        # 2. Extract list safely
         organisations_list = None
-        
-        if 'Organisations' in data:
-            organisations_list = data['Organisations']
-        elif 'value' in data and isinstance(data['value'], list):
-            organisations_list = data['value']
+        if "Organisations" in data:
+            organisations_list = data["Organisations"]
+        elif "value" in data and isinstance(data["value"], list):
+            organisations_list = data["value"]
         elif isinstance(data, list):
             organisations_list = data
-        else:
-            print("Error: Could not find the list of organisations in the response.")
-            print("Response content (first 500 chars):", str(data)[:500])
-            exit()
 
-        if organisations_list is not None and len(organisations_list) > 0:
-            # Convert the list of organisations into a pandas DataFrame
+        if organisations_list:
+            # 3. Load into DataFrame natively (keeps objects completely intact)
             df = pd.DataFrame(organisations_list)
 
-            # 6. SAVE TO EXCEL
-            output_file = "sra_organisations.xlsx"
-            df.to_excel(output_file, index=False)
-            
-            total_count = data.get('Count', len(df)) 
-            print(f"Successfully saved {len(df)} organisations to {output_file} (Total count from API: {total_count})")
-        
-        elif organisations_list is not None and len(organisations_list) == 0:
-            print("The request was successful, but the API returned 0 organisations.")
-        
+            # 4. Prepare nested columns for Parquet storage
+            # Parquet requires complex list/dict columns to be cast to strings,
+            # but unlike Excel, Parquet has NO maximum character limits.
+            for col in ["Offices", "WorkArea"]:
+                if col in df.columns:
+                    df[col] = df[col].astype(str)
+
+            # 5. Output to Parquet
+            output_parquet = "sra_organisations.parquet"
+            df.to_parquet(output_parquet, engine="pyarrow", index=False)
+
+            print("\n" + "=" * 50)
+            print(f"SUCCESS: Saved {len(df)} rows to {output_parquet}")
+            print("=" * 50)
         else:
-            print("Could not process the data.")
-
-
+            print("No organization data found in response.")
     else:
-        # Handle other errors (e.g., 401 Unauthorized, 403 Forbidden)
-        print(f"Error: API request failed with status code {response.status_code}")
-        print("Response text:", response.text)
-        if response.status_code == 401 or response.status_code == 403:
-            print("\nThis 'Unauthorized' or 'Forbidden' error means your key is incorrect,")
-            print("expired, or not subscribed to this API product.")
+        print(f"API failed with status code {response.status_code}")
 
-
-except requests.exceptions.RequestException as e:
-    print(f"An error occurred during the request: {e}")
 except Exception as e:
     print(f"An error occurred: {e}")
