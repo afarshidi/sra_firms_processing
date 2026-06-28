@@ -52,7 +52,6 @@ try:
             output_file = "sra_organisations.xlsx"
             df.to_excel(output_file, index=False)
             
-            # The 'Count' key from your output tells us the total
             total_count = data.get('Count', len(df)) 
             print(f"Successfully saved {len(df)} organisations to {output_file} (Total count from API: {total_count})")
         
