@@ -19,3 +19,8 @@ try some simple viusaliztion
 so scrping works fine, there are two date columns that can be usful. one is the date that copmany started and one is useful for the ones that they are not active anymore.
 
 putting the date columns aside, there are two main columns I'm intersted in them, one is hte WorkArea, the other is offices. boht needs to get celanined. offices shuold be cleaned to be useflu. I can extract city as well as their postcode, and use them to visualiztion using maps. 
+
+#4
+when tried explodign offices colum. I figured otu that some rows have truacted text when I saved them as excel file, switchign it to a parquet file.
+trying to do some analysis using locations and workareas, clealy if I just count the number of firms based on locaoin, London would have the hgithest number in any work ares, [it's worth it to see is there any area that Lodon is not dominate? ]
+some cleaning and normalization are needed for locatoins, some of them are not cities, some time London might be extracted differenlyt
